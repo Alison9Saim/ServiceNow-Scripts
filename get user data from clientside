@@ -1,0 +1,51 @@
+
+function onLoad() {
+       var ga = new GlideAjax('companyUtil');
+       ga.addParam('sysparm_name', 'getCompanyName');
+       ga.getXML(analyzeResponse); // Always try to use asynchronous (getXML) calls rather than synchronous (getXMLWait)
+}
+function analyzeResponse(response) { 
+       var answer = response.responseXML.documentElement.getAttribute("answer");
+		var url =  this.location;
+		// https://ciinvestmentsdev.service-now.com/sp?id=sc_cat_item&sys_id=3f1dd0320a0a0b99000a53f7604a2ef9
+		//var strUrlRemoveSysID = url.split("sys_id");
+		var CGI_LINK = "/sp?id=sc_cat_item&sys_id=9014b2c98701061090b3fd56cebb35a5";
+		var full_CGI_URL = url.origin + CGI_LINK;
+		//alert(url.origin);
+		//alert(full_CGI_URL);
+		if(answer == "CGI"){
+			//alert("route to different page");
+			var redirectURL = full_CGI_URL; //url to redirect; this approach works in platform and Service Portal view
+			top.window.location = redirectURL;
+		}
+       //you can do anything here with the form, the answer variable holds the name of the company
+}
+
+
+
+
+//---------------------------------------------------------
+// This is a script include
+// Name: companyUtil
+// API Name: global.companyUtil
+// Client callable: True
+// Application: Global
+
+var companyUtil = Class.create();
+companyUtil.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+
+       getCompanyName: function() {
+               var compName = ''; // Return value
+               var grComp   = new GlideRecord('core_company');
+		   
+               if (grComp.get(gs.getUser().getCompanyID())) {
+				   compName = grComp.name;
+               }
+             return compName;
+       }
+
+
+});
+
+
+
